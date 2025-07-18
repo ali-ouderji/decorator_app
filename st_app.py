@@ -9,7 +9,6 @@ def requires_authentication(func):
     def wrapper(*args, **kwargs):
         if not st.session_state.get("authenticated", False):
             st.warning("🚫 Please log in to access this feature.")
-            return
         return func(*args, **kwargs)
     return wrapper
 
