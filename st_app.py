@@ -9,6 +9,7 @@ def requires_authentication(func):
     def wrapper(*args, **kwargs):
         if not st.session_state.get("authenticated", False):
             st.warning("🚫 Please log in to access this feature.")
+            return  # Block access
         return func(*args, **kwargs)
     return wrapper
 
@@ -24,19 +25,34 @@ def login_form():
         else:
             st.error("❌ Invalid credentials")
 
+# --- Logout button ---
+def logout_button():
+    if st.sidebar.button("🚪 Logout"):
+        st.session_state.authenticated = False
+        st.success("🔓 Logged out successfully")
+
 # --- Protected content ---
 @requires_authentication
 def view_secret():
     st.subheader("🤫 Secret Page")
     st.info("This is a secret page visible only to logged-in users!")
 
+    st.write("🎉 Welcome, admin! You made it.")
+    
+    # Example: secret image or file
+    st.image("https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif", caption="Top Secret Fun")
+    st.download_button("📄 Download Secret File", data="Top secret content inside.", file_name="secret.txt")
+
 # --- Main App ---
 def main():
     if "authenticated" not in st.session_state:
         st.session_state.authenticated = False
 
-    st.sidebar.title("Navigation")
+    st.sidebar.title("🔧 Navigation")
     choice = st.sidebar.radio("Go to", ["Login", "Secret Page"])
+
+    if st.session_state.authenticated:
+        logout_button()
 
     if choice == "Login":
         login_form()
